@@ -4,7 +4,8 @@
   "description": "API desenvolvida no curso gratuito de clean architecture e TDD do Rodrigo Manguinho no youtube",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --watchAll",
+    "test:staged": "jest"
   },
   "standard": {
     "env": [
