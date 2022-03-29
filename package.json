@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --silent --colors --noStackTrace --passWithNoTests",
-    "test:unit" : "npm test -- --watch -c jest-unit-test-config.js",
+    "test:unit": "npm test -- --watch -c jest-unit-test-config.js",
     "test:integration": "npm test -- --watch -c jest-integration-test-config.js",
     "test:staged": "npm test -- --findRelatedTests",
     "test:ci": "npm test -- --silent"
@@ -23,5 +23,8 @@
     "jest": "^27.5.1",
     "lint-staged": "^12.3.7",
     "standard": "^16.0.4"
+  },
+  "dependencies": {
+    "validator": "^13.7.0"
   }
 }
