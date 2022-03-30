@@ -2,26 +2,8 @@ const { MissingParamError, InvalidParamError } = require('../../utils/errors')
 const AuthUseCase = require('./auth-usecase')
 
 const makeSut = () => {
-  class EncrypterSpy {
-    async compare (password, hashedPassword) {
-      this.password = password
-      this.hashedPassword = hashedPassword
-    }
-  }
-
-  class LoadUserByEmailRepositorySpy {
-    async load (email) {
-      this.email = email
-      return this.user
-    }
-  }
-
-  const encrypterSpy = new EncrypterSpy()
-
-  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
-  loadUserByEmailRepositorySpy.user = {
-    password: 'hashed_password'
-  }
+  const encrypterSpy = makeEncrypter()
+  const loadUserByEmailRepositorySpy = makeLoadUserByEmailRepository()
   const sut = new AuthUseCase(loadUserByEmailRepositorySpy, encrypterSpy)
 
   return {
@@ -29,6 +11,37 @@ const makeSut = () => {
     loadUserByEmailRepositorySpy,
     encrypterSpy
   }
+}
+
+const makeEncrypter = () => {
+  class EncrypterSpy {
+    async compare (password, hashedPassword) {
+      this.password = password
+      this.hashedPassword = hashedPassword
+
+      return this.isValid
+    }
+  }
+
+  const encrypterSpy = new EncrypterSpy()
+  encrypterSpy.isValid = true
+
+  return encrypterSpy
+}
+
+const makeLoadUserByEmailRepository = () => {
+  class LoadUserByEmailRepositorySpy {
+    async load (email) {
+      this.email = email
+      return this.user
+    }
+  }
+  const loadUserByEmailRepositorySpy = new LoadUserByEmailRepositorySpy()
+  loadUserByEmailRepositorySpy.user = {
+    password: 'hashed_password'
+  }
+
+  return loadUserByEmailRepositorySpy
 }
 
 describe('Auth UseCase', () => {
@@ -77,7 +90,8 @@ describe('Auth UseCase', () => {
   })
 
   it('Should return null if an invalid password is provided', async () => {
-    const { sut } = makeSut()
+    const { sut, encrypterSpy } = makeSut()
+    encrypterSpy.isValid = false
     const accessToken = await sut.auth('valid_email@email.com', 'invalid_password')
 
     expect(accessToken).toBeNull()
